@@ -1,7 +1,3 @@
-(* TODO: License / Which Version of Imp? *)
-
-
-(* ################################################################# *)
 (** * Imp: Simple Imperative Programs *)
 
 (** This file presents a variant of the Imp programming language 
@@ -14,8 +10,8 @@ Require Import Equalities Arith.
 Require Import Vminus.Atom Vminus.Env.
 Require Import Vminus.Sequences.
 
-(* ----------------------------------------------------------------- *)
-(** *** Identifiers *)
+(* ================================================================= *)
+(** ** Identifiers *)
 
 (** To simplify the compilation process, this variant of Imp uses 
     [Atom.t] values as variable identifiers.  [Atom.t] is also used by
@@ -76,7 +72,7 @@ Notation "'SKIP'" :=
 Notation "X '::=' a" := 
   (CAss X a) (at level 60) : imp_scope.
 Notation "c1 ;; c2" := 
-  (CSeq c1 c2) (at level 80, right associativity) : imp_scope.
+  (CSeq c1 c2) (at level 100, right associativity) : imp_scope.
 Notation "'WHILE' b 'DO' c 'END'" := 
   (CWhile b c) (at level 80, right associativity) : imp_scope.
 Notation "'IFB' e1 'THEN' e2 'ELSE' e3 'FI'" := 
@@ -170,7 +166,7 @@ Fixpoint imp_eval (c: com) (st: state) (fuel: nat) : option state :=
   | S n' =>
     match c with
     | (i ::= a) => Some (update st i (aeval a st))
-    | c1 ;; c2 =>
+    | (c1 ;; c2) =>
       match c1 with
       | SKIP => imp_eval c2 st n'
       | _ => 
@@ -184,7 +180,7 @@ Fixpoint imp_eval (c: com) (st: state) (fuel: nat) : option state :=
       if beval e st then imp_eval c1 st n' else imp_eval c2 st n'
     | WHILE e DO c END =>
       if beval e st then imp_eval (c ;; WHILE e DO c END) st n'
-      else None
+      else Some st
     end
   end.
 
@@ -192,8 +188,8 @@ Fixpoint imp_eval_step (c : com) (st : state) : option (com * state) :=
   match c with
   | SKIP => None
   | (i ::= a) => Some (SKIP, (update st i (aeval a st)))
-  | SKIP ;; c2 => Some (c2, st)
-  | c1 ;; c2 =>
+  | (SKIP ;; c2) => Some (c2, st)
+  | (c1 ;; c2) =>
     match imp_eval_step c1 st with
     | Some (c1', st') => Some (c1' ;; c2, st')
     | None => None

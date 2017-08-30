@@ -1,3 +1,4 @@
+(** * Dom: Graphs and Graph Dominators *)
 (* -------------------------------------------------------------------------- *
  *                     Vellvm - the Verified LLVM project                     *
  *                                                                            *
@@ -11,11 +12,7 @@
 Require Import List Equalities Orders RelationClasses.
 Require Import FSets FMaps.
 Import ListNotations.
-Require Import Util.
-
-(* ################################################################# *)
-(** * Dom: Reasoning about dominators in a graph. *)
-
+From Vminus Require Import Util.
 
 (* ################################################################# *)
 (** * GRAPH *)
